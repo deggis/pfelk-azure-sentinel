@@ -8,11 +8,11 @@ Building on top of noodlemctwoodle's pf-azure-sentinel
 This repo is for users who want to ship their logs from PfSense
 to Azure Sentinel.
 
-If you already use PfELK, adding Sentinel output requires
-only minor configuration changes.
+If you already use PfELK, adding Sentinel output to Logstash
+requires only minor configuration changes.
 
 If you don't yet use PfELK, using configuration from PfELK for
-parsing + shipping PfSense is an easy way to go.
+parsing + shipping PfSense logs is a ready solution.
 
 PfSense generates logs in syslog format and two things would need
 to happen before they are usable in a SIEM:
@@ -33,7 +33,10 @@ This repository serves mainly as an example.
 Check PfELK repository for current configuration & parser patterns.
 
 On top of PfELK configuration, files in this repo's etc/logstash/conf.d
-files are worth checking.
+files are worth checking:
+
+- 49-cleanup.pfelk
+- 50-outputs.pfelk
 
 ## Contributions
 
@@ -42,11 +45,11 @@ All contributions that are applicable to PfELK should go there.
 ## Related work & comparisons
 
 - pfelk/pfelk
-  - Main body of work everything PfSense & Logstash
+  - Main body of work for everything related to PfSense & Logstash
 - noodlemctwoodle/pf-azure-sentinel (2021)
   - Uses PfELK configuration to parse PfSense logs
   - Uses `microsoft-logstash-output-azure-loganalytics` plugin to ship logs
-  - Provides several Azure Sentinel KQL queries to query `psfsense_logstash_CL` table
+  - Provides several Azure Sentinel KQL queries to query directly `psfsense_logstash_CL` table
 - in.security's post:
   - https://in.security/2022/11/28/logstash-sentinel-round-two/
   - Up to date guide for shipping logs to Sentinel with Logstash
