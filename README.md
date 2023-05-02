@@ -8,7 +8,7 @@ Building on top of noodlemctwoodle's pf-azure-sentinel
 This repo is for users who want to ship their logs from PfSense
 to Azure Sentinel.
 
-If you already use PfELK, using adding Sentinel output requires
+If you already use PfELK, adding Sentinel output requires
 only minor configuration changes.
 
 If you don't yet use PfELK, using configuration from PfELK for
@@ -23,6 +23,8 @@ to happen before they are usable in a SIEM:
 For parsing, the PfELK project has already done the heavy lifting
 and maintains a set of Logstash Grok patterns.
 
+For shipping, there's a new Logstash plugin that can be used here
+https://github.com/Azure/Azure-Sentinel/tree/master/DataConnectors/microsoft-sentinel-logstash-output-plugin
 
 ## How to use this repository
 
