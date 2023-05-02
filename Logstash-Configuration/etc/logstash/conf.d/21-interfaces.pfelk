@@ -1,0 +1,14 @@
+filter {
+  if "pfelk" in [tags] {
+    if [interface][name] {
+      translate {
+        source => "[interface][name]"
+        target => "[interface][description]"
+        dictionary_path => "/etc/pfelk/databases/interfaces.csv"
+        refresh_interval => 60
+        refresh_behaviour => replace
+        fallback => "%{[interface][name]}"
+      }
+    }
+  }
+}
