@@ -40,7 +40,7 @@ Check this part from [in.security's post](https://in.security/2022/11/28/logstas
 
 When prompted for table name, use `PfELK`. This results to `PfELK_CL` table and data stream `Custom-PfELK_CL`.
 
-## Sentinel transformations
+## Info: Ingested data format (before transformations)
 
 When logs flow to a table in a Log Analytics Workspace, they can be queried using KQL.
 
@@ -49,6 +49,46 @@ Note that:
  - the data format is not the same as in [noodlemctwoodle's repo](https://github.com/noodlemctwoodle/pf-azure-sentinel)
    - I don't actually know why this is. In noodlemctwoodle's docs the data is in many `..._s` columns.
    - In any case, the KQL queries at [noodlemctwoodle's repo](https://github.com/noodlemctwoodle/pf-azure-sentinel/tree/main/KQL/pfSense/Queries) should not work directly.
-   - the data is not in CommonEventFormat
+ - the data is not in CommonEventFormat, so pfsense query the snippets at [Azure-Sentinel](https://github.com/Azure/Azure-Sentinel/tree/master/Parsers/pfsense) repo don't work.
+
+Instead, the goal is to enable the use of built-in ASIM content using the custom table via [ASIM parser](https://learn.microsoft.com/en-us/azure/sentinel/normalization).
+
+At column level, the PfELK format looks like this (before query time ASIM transformations):
  
 ![schema](pfelk_data_schema.png)
+
+## Info: Sentinel tranformations -- ASIM parser (`_Im_NetworkSession` for fw logs)
+
+Goal is to be able to query PfSense firewall logs using built-in function `_Im_NetworkSession`.
+
+`_Im_NetworkSession` queries three functions:
+  - `_Im_NetworkSessionBuiltIn` - starts with underscore, which means that this is a built-in and cannot be modified
+  - `Im_NetworkSessionSolutions` - this should be workspace-deployed, and won't exist before it is put there
+  - `Im_NetworkSessionCustom` - likewise
+
+## Deploy empty unifying parsers
+
+Before querying `_Im_NetworkSession` is possible, you need to:
+
+- Deploy those empty and missing unifying parsers to your workspace
+  - [https://github.com/Azure/Azure-Sentinel/tree/master/ASIM/deploy/EmptyCustomUnifyingParsers](https://github.com/Azure/Azure-Sentinel/tree/master/ASIM/deploy/EmptyCustomUnifyingParsers)
+
+Note: Currently [NetworkSessionDeploymentCustomUnifyingParsers](https://github.com/Azure/Azure-Sentinel/blob/master/ASIM/deploy/EmptyCustomUnifyingParsers/NetworkSessionDeploymentCustomUnifyingParsers.json) deploys only `Im_NetworkSessionCustom`, but the built-in function depends also of `Im_NetworkSessionSolutions` (see above). Looks like a bug?
+
+## Deploy PfELK ASIM parser
+
+Check [ARM/vimNetworkSessionPfELK.json](ARM/vimNetworkSessionPfELK.json)
+
+az-cli
+
+    az deployment group create --resource-group RESOURCE_GROUP --template-file vimNetworkSessionPfELK.json --parameters Workspace=LOG_ANALYTICS_WORKSPACE
+
+## Include `vimNetworkSessionPfELK`
+
+Now you should have `Im_NetworkSessionCustom` and `vimNetworkSessionPfELK` as workspace deployed functions.
+
+Add `vimNetworkSessionPfELK` to `Im_NetworkSessionCustom`
+
+# Ready
+
+When you get familiar results by querying `_Im_NetworkSession`, we are ready.
