@@ -2,7 +2,7 @@
 
 Building on top of noodlemctwoodle's pf-azure-sentinel
 
-![architecture](pfelk-azure-sentinel-architecture.png)
+![architecture](pfelk-azure-sentinel-architecture2.png)
 
 ## Intro
 

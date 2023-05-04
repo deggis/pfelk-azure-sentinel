@@ -3,7 +3,7 @@
 Note: instructions focus on firewall logs, as that's currently only item
 there's a Sentinel ASIM parser for.
 
-![architecture](pfelk-azure-sentinel-architecture.png)
+![architecture](pfelk-azure-sentinel-architecture2.png)
 
 ## PfSense
 
